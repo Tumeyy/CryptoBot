@@ -1,4 +1,17 @@
+import os
 import discord
+import requests
+
+
+#get crypto data
+def getCryptoPrices(crypto):
+    URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd'
+    r = requests.get(url=URL)
+    data = r.json()
+    print(data)
+
+
+getCryptoPrices('bitcoin')
 
 #instantiate a discord client
 client = discord.Client(intents=discord.Intents.default())
@@ -19,5 +32,5 @@ async def on_message(message):
         await message.channel.send('yeet')
 
 
-BOT_TOKEN = ''
+BOT_TOKEN = os.environ['BOT_TOKEN']
 client.run(BOT_TOKEN)
