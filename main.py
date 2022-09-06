@@ -19,5 +19,5 @@ async def on_message(message):
         await message.channel.send('yeet')
 
 
-BOT_TOKEN = 'MTAxNjUxNTY4MzE5MTg4NTg0NQ.GlwbUQ.1tt1Nd7e_pSkZIZUR5cjA5uaal7dHo-MuouH8Q'
+BOT_TOKEN = ''
 client.run(BOT_TOKEN)
