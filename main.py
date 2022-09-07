@@ -20,6 +20,7 @@ def getCryptoPrices(crypto):
         return None
 
 
+#check if a cryptocurrency is supported in this bot
 def isCryptoSupported(crypto):
     if crypto in db.keys():
         return True
@@ -36,6 +37,9 @@ client = discord.Client(intents=discord.Intents.default())
 @client.event
 async def on_ready():
     print(f'You have logged in as {client}')
+    channel = discord.utils.get(client.get_all_channels(), name='general')
+
+    await client.get_channel(channel.id).send('bot is now online!')
 
 
 #called whenever there is a message in the chat
@@ -46,6 +50,19 @@ async def on_message(message):
 
     if message.content.startswith('--help'):
         await message.channel.send('yeet')
+
+    if message.content.lower() in db.keys():
+        await message.channel.send(
+            f'The current price of {message.content} is: {getCryptoPrices(message.content.lower())} USD'
+        )
+
+    if message.content.startswith('$list'):
+        cryptoSupportedList = [key for key in db.keys()]
+        await message.channel.send(cryptoSupportedList)
+
+    if message.content.startswith('$support '):
+        cryptoToBeChecked = message.content.split('$support', 1)[1].lower()
+        await message.channel.send(isCryptoSupported(cryptoToBeChecked))
 
 
 BOT_TOKEN = os.environ['BOT_TOKEN']
