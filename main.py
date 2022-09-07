@@ -21,7 +21,7 @@ def getCryptoPrices(crypto):
 
     #putting crypto and their prices in db
     for i in range(len(data)):
-        db[data[i]['id']] = data[i]['currentPrice']
+        db[data[i]['id']] = data[i]['current_price']
 
     if crypto in db.keys():
         return db[crypto]
@@ -85,79 +85,80 @@ async def sendMessage(message):
 
 #detecting price alerts
 async def detectPriceAlert(crypto, priceTargets):
-    currentPrice = getCryptoPrices(crypto)
+    current_price = getCryptoPrices(crypto)
 
     if db['hitPriceTarget'] not in range(
-            min(currentPrice, db['hitPriceTarget']),
-            max(currentPrice, db['hitPriceTarget']) +
-            1) and min(priceTargets) <= currentPrice <= max(priceTargets):
+            min(current_price, db['hitPriceTarget']),
+            max(current_price, db['hitPriceTarget']) +
+            1) and min(priceTargets) <= current_price <= max(priceTargets):
         db['hitPriceTarget'] = 0
     else:
         # compute notifications
         if len(
-                checkPriceTrend(db['hitPriceTarget'], currentPrice,
+                checkPriceTrend(db['hitPriceTarget'], current_price,
                                 priceTargets)) != 0:
             if db['notifications'] != checkPriceTrend(
-                    db['hitPriceTarget'], currentPrice, priceTargets):
+                    db['hitPriceTarget'], current_price, priceTargets):
                 # increasing in value:
-                if db['hitPriceTarget'] < currentPrice:
+                if db['hitPriceTarget'] < current_price:
                     if checkTwoListOrder(
-                            normal_alert(db['hitPriceTarget'], currentPrice),
+                            normal_alert(db['hitPriceTarget'], current_price),
                             db['notifications']):
                         for priceTarget in list(
                                 set(
                                     normal_alert(db["hitPriceTarget"],
-                                                 currentPrice)) -
+                                                 current_price)) -
                                 set(db["notifications"])):
                             await sendMessage(
-                                f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {currentPrice} USD.'
+                                f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {current_price} USD.'
                             )
                     else:
                         for priceTarget in list(
                                 set(
                                     normal_alert(db["hitPriceTarget"],
-                                                 currentPrice)) -
+                                                 current_price)) -
                                 set(db["notifications"])):
                             await sendMessage(
-                                f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {currentPrice} USD.'
+                                f'The price of {crypto} has just passed {priceTarget} USD. The current price is: {current_price} USD.'
                             )
 
                 # decreasing in value:
-                elif db['hitPriceTarget'] >= currentPrice:
+                elif db['hitPriceTarget'] >= current_price:
                     if checkTwoListOrder(
-                            reverse_alert(db['hitPriceTarget'], currentPrice,
+                            reverse_alert(db['hitPriceTarget'], current_price,
                                           priceTargets), db["notifications"]):
                         for priceTarget in list(
                                 set(db["notifications"]) - set(
                                     reverse_alert(db["hitPriceTarget"],
-                                                  currentPrice, priceTargets))
+                                                  current_price, priceTargets))
                         ):
                             await sendMessage(
-                                f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {currentPrice} USD.'
+                                f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {current_price} USD.'
                             )
                     else:
                         for priceTarget in list(
                                 set(db["notifications"]) - set(
                                     reverse_alert(db["hitPriceTarget"],
-                                                  currentPrice, priceTargets))
+                                                  current_price, priceTargets))
                         ):
                             await sendMessage(
-                                f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {currentPrice} USD.'
+                                f'The price of {crypto} has just fallen below {priceTarget} USD. The current price is: {current_price} USD.'
                             )
                 else:
                     pass
 
-            if db['hitPriceTarget'] < currentPrice:
+            if db['hitPriceTarget'] < current_price:
                 db["notifications"] = normal_alert(db['hitPriceTarget'],
-                                                   currentPrice)
+                                                   current_price)
                 db['hitPriceTarget'] = max(
-                    normal_alert(db['hitPriceTarget'], currentPrice))
+                    normal_alert(db['hitPriceTarget'], current_price))
 
-            if db['hitPriceTarget'] > currentPrice:
+            if db['hitPriceTarget'] > current_price:
                 db["notifications"] = reverse_alert(db['hitPriceTarget'],
-                                                    currentPrice, priceTargets)
+                                                    current_price,
+                                                    priceTargets)
                 db['hitPriceTarget'] = min(
-                    reverse_alert(db['hitPriceTarget'], currentPrice,
+                    reverse_alert(db['hitPriceTarget'], current_price,
                                   priceTargets))
 
         else:
