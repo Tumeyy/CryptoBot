@@ -61,7 +61,7 @@ async def on_message(message):
         await message.channel.send(cryptoSupportedList)
 
     if message.content.startswith('$support '):
-        cryptoToBeChecked = message.content.split('$support', 1)[1].lower()
+        cryptoToBeChecked = message.content.split('$support ', 1)[1].lower()
         await message.channel.send(isCryptoSupported(cryptoToBeChecked))
 
 
